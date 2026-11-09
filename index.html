@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#17181e">
+  <title>실버스타 스튜디오</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="header">
+    <a class="brand" href="#">
+      <span>✦</span>
+      <div>실버스타 스튜디오<small>SILVERSTAR STUDIO</small></div>
+    </a>
+
+    <input id="projectName" class="project-name"
+      value="나의 첫 번째 음악"
+      maxlength="80" aria-label="작품 이름">
+
+    <div class="header-buttons">
+      <button id="helpBtn">도움말</button>
+      <button id="openBtn">불러오기</button>
+      <button id="saveBtn" class="purple">저장하기</button>
+    </div>
+  </header>
+
+  <nav class="guide" aria-label="음악 만드는 순서">
+    <span><b>1</b> 장르 고르기</span>
+    <span><b>2</b> 악기 넣기</span>
+    <span class="selected"><b>3</b> 음악 만들기</span>
+    <span><b>4</b> 완성하기</span>
+  </nav>
+
+  <div class="layout">
+    <aside class="left">
+      <section class="card">
+        <h2>어떤 음악을 만들까요?</h2>
+        <p class="sub">장르를 고른 뒤 예제를 불러보세요.</p>
+
+        <div id="genres" class="genre-grid">
+          <button data-genre="jazz">🎷<strong>재즈</strong></button>
+          <button data-genre="ballad" class="active">♡<strong>발라드</strong></button>
+          <button data-genre="hiphop">♫<strong>힙합</strong></button>
+          <button data-genre="rap">🎤<strong>랩</strong></button>
+        </div>
+
+        <button id="exampleBtn" class="wide purple-outline">
+          ▶ 선택한 장르 예제 불러오기
+        </button>
+        <small>현재 작업을 바꿔요. 되돌리기로 복원할 수 있어요.</small>
+      </section>
+
+      <section class="card">
+        <h2>악기 추가</h2>
+        <div id="instrumentList" class="instrument-list"></div>
+        <small>최대 12개 트랙을 함께 사용할 수 있어요.</small>
+      </section>
+
+      <section class="card tip">
+        <h2>✧ 작곡 팁</h2>
+        <p>드럼 → 베이스 → 화음 → 멜로디 순서로 쌓으면 쉽게 시작할 수 있어요.</p>
+        <p>악기를 너무 많이 넣기보다, 서로 잘 들리는지 확인해 보세요.</p>
+      </section>
+    </aside>
+
+    <main>
+      <section class="card transport">
+        <div class="transport-buttons">
+          <button id="playBtn" class="mint">▶ 들어보기</button>
+          <button id="stopBtn">■ 멈추기</button>
+        </div>
+
+        <label>빠르기
+          <input id="bpm" type="number" min="40" max="200" value="86">
+          <small>BPM</small>
+        </label>
+
+        <label>곡 길이
+          <select id="bars">
+            <option value="4">4마디</option>
+            <option value="8">8마디</option>
+            <option value="16">16마디</option>
+          </select>
+        </label>
+
+        <label class="check"><input id="loop" type="checkbox" checked> 반복</label>
+        <label class="check"><input id="metro" type="checkbox"> 박자 소리</label>
+        <output id="clock">01 : 01</output>
+      </section>
+
+      <section class="card arrangement-card">
+        <div class="section-top">
+          <div>
+            <h2>♫ 악기별 음악</h2>
+            <p class="sub">편집할 악기와 마디를 눌러보세요.</p>
+          </div>
+          <div class="button-group">
+            <button id="undoBtn" title="Ctrl / ⌘ + Z">↶ 되돌리기</button>
+            <button id="redoBtn" title="Ctrl / ⌘ + Shift + Z">↷ 다시 실행</button>
+          </div>
+        </div>
+
+        <div class="scroll-area">
+          <div id="arrangement"></div>
+        </div>
+      </section>
+
+      <section class="card editor-card">
+        <div class="section-top">
+          <div>
+            <h2 id="editorTitle">멜로디 만들기</h2>
+            <p class="sub" id="editorHint">칸을 누르면 음이 생겨요. 다시 누르면 지워져요.</p>
+          </div>
+          <span id="selectedBar" class="badge">1마디</span>
+        </div>
+
+        <div class="editor-controls">
+          <label>음 길이
+            <select id="noteLength">
+              <option value="1">아주 짧게 · 1칸</option>
+              <option value="2" selected>짧게 · 2칸</option>
+              <option value="4">보통 · 4칸</option>
+              <option value="8">길게 · 8칸</option>
+              <option value="16">한 마디 · 16칸</option>
+            </select>
+          </label>
+
+          <label>음 높이
+            <select id="octave">
+              <option value="36">아주 낮게 · C2</option>
+              <option value="48">낮게 · C3</option>
+              <option value="60" selected>보통 · C4</option>
+              <option value="72">높게 · C5</option>
+            </select>
+          </label>
+
+          <label>세기
+            <input id="velocity" type="range" min="20" max="100" value="80">
+            <output id="velocityValue">80</output>
+          </label>
+        </div>
+
+        <div class="scroll-area">
+          <div id="pianoRoll"></div>
+        </div>
+
+        <div class="editor-bottom">
+          <div class="button-group">
+            <button id="previousBar">← 이전 마디</button>
+            <button id="nextBar">다음 마디 →</button>
+          </div>
+          <div class="button-group">
+            <button id="copyBar">다음 마디에 복사</button>
+            <button id="clearBar" class="danger-text">이 마디 비우기</button>
+          </div>
+        </div>
+        <small>한 마디는 16칸이에요. 계이름을 누르면 해당 음을 미리 들어볼 수 있어요.</small>
+      </section>
+
+      <details class="card advanced">
+        <summary>고급 기능 펼치기 <span>반음 · 악기 변경 · 공간감 · 믹서</span></summary>
+
+        <div class="advanced-grid">
+          <section>
+            <h3>음과 리듬</h3>
+            <label class="check">
+              <input id="chromatic" type="checkbox">
+              반음까지 표시하기 ♯
+            </label>
+            <label>스윙
+              <input id="swing" type="range" min="0" max="45" value="0">
+              <output id="swingValue">0%</output>
+            </label>
+            <small>엇박 위치를 늦춰 리듬에 흔들리는 느낌을 줘요.</small>
+          </section>
+
+          <section>
+            <h3>선택한 트랙</h3>
+            <label>악기
+              <select id="trackInstrument"></select>
+            </label>
+            <label>좌우 위치
+              <input id="pan" type="range" min="-100" max="100" value="0">
+              <output id="panValue">가운데</output>
+            </label>
+            <button id="removeTrack" class="danger-text">선택 트랙 삭제</button>
+          </section>
+
+          <section>
+            <h3>음향 효과</h3>
+            <label>공간감 · 리버브
+              <input id="reverb" type="range" min="0" max="60" value="18">
+              <output id="reverbValue">18%</output>
+            </label>
+            <label>메아리 · 딜레이
+              <input id="delay" type="range" min="0" max="50" value="8">
+              <output id="delayValue">8%</output>
+            </label>
+          </section>
+
+          <section>
+            <h3>전체 소리</h3>
+            <label>마스터 볼륨
+              <input id="master" type="range" min="0" max="100" value="70">
+              <output id="masterValue">70%</output>
+            </label>
+            <button id="newBtn">새 작품 만들기</button>
+            <small>새 작품을 만들어도 되돌리기로 복원할 수 있어요.</small>
+          </section>
+        </div>
+      </details>
+
+      <div id="status" class="status" role="status" aria-live="polite">
+        준비 완료 · 들어보기를 눌러 시작하세요.
+      </div>
+    </main>
+
+    <aside class="right">
+      <section class="card harmony">
+        <h2>♬ 화음 도우미</h2>
+        <p class="sub">분위기를 고르면 어울리는 코드 진행을 준비해 줘요.</p>
+
+        <label>화음 기준음
+          <select id="key">
+            <option value="0">도 · C</option>
+            <option value="1">도♯ · C♯</option>
+            <option value="2">레 · D</option>
+            <option value="3">레♯ · D♯</option>
+            <option value="4">미 · E</option>
+            <option value="5">파 · F</option>
+            <option value="6">파♯ · F♯</option>
+            <option value="7">솔 · G</option>
+            <option value="8">솔♯ · G♯</option>
+            <option value="9">라 · A</option>
+            <option value="10">라♯ · A♯</option>
+            <option value="11">시 · B</option>
+          </select>
+        </label>
+
+        <div id="moods" class="mood-grid">
+          <button data-mood="bright">☀<span>밝게</span></button>
+          <button data-mood="calm">☾<span>차분하게</span></button>
+          <button data-mood="warm" class="active">♡<span>감성적으로</span></button>
+          <button data-mood="jazz">♬<span>재즈 느낌</span></button>
+        </div>
+
+        <div id="chordPreview" class="chord-preview"></div>
+
+        <button id="applyChords" class="wide purple">
+          ✧ 화음 트랙 추가하기
+        </button>
+        <small>기존 멜로디를 보존하고, 곡 길이에 맞춰 새 트랙을 만들어요.</small>
+
+        <hr>
+
+        <h3>직접 화음 만들기</h3>
+        <div class="chord-inputs">
+          <label>시작음<select id="chordRoot"></select></label>
+          <label>종류
+            <select id="chordType">
+              <option value="maj">장화음 · maj</option>
+              <option value="min">단화음 · min</option>
+              <option value="7">7</option>
+              <option value="maj7">maj7</option>
+              <option value="m7">m7</option>
+              <option value="9">9</option>
+              <option value="sus4">sus4</option>
+              <option value="dim">dim</option>
+            </select>
+          </label>
+          <label>전위
+            <select id="inversion">
+              <option value="0">기본</option>
+              <option value="1">1전위</option>
+              <option value="2">2전위</option>
+            </select>
+          </label>
+        </div>
+
+        <button id="previewChord" class="wide">화음 들어보기</button>
+        <button id="insertChord" class="wide purple-outline">선택 마디에 넣기</button>
+        <small>현재 악기의 선택 마디에 화음을 추가해요. 드럼에는 넣을 수 없어요.</small>
+      </section>
+
+      <section class="card finish">
+        <h2>음악이 완성됐나요?</h2>
+        <p>음원은 WAV로, 편집할 작품은 프로젝트 파일로 저장하세요.</p>
+        <button id="exportBtn" class="wide mint">↓ 완성한 음악 내려받기</button>
+        <small>전체 곡 + 효과음 잔향 2초 · WAV 형식</small>
+      </section>
+
+      <section class="card">
+        <h3>작품 보관</h3>
+        <p class="sub">자동저장은 현재 브라우저에만 남아요. 다른 기기에서 이어 하려면 ‘저장하기’로 받은 JSON 파일을 불러오세요.</p>
+      </section>
+    </aside>
+  </div>
+
+  <input id="projectFile" type="file" accept=".json,application/json" hidden>
+
+  <dialog id="helpDialog">
+    <h2>실버스타 스튜디오 사용법</h2>
+    <ol>
+      <li>장르를 고르고 예제를 불러오거나, 악기를 추가하세요.</li>
+      <li>‘악기별 음악’에서 편집할 악기와 마디를 누르세요.</li>
+      <li>격자 칸을 누르면 음이 생기고, 다시 누르면 지워져요.</li>
+      <li>화음 도우미로 반주를 만들고, 멜로디를 더해보세요.</li>
+      <li>‘들어보기’로 전체 곡을 듣고 음량을 조절하세요.</li>
+      <li>‘저장하기’는 편집 파일, ‘음악 내려받기’는 WAV 음원이에요.</li>
+    </ol>
+    <p>스페이스: 재생/정지 · Ctrl/⌘ + Z: 되돌리기</p>
+    <p>장르 예제의 멜로디는 프로그램에 포함된 간단한 예시 패턴이에요.</p>
+    <form method="dialog"><button class="purple wide">알겠어요</button></form>
+  </dialog>
+</body>
+</html>
